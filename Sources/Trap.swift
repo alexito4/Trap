@@ -1,4 +1,3 @@
-
 import Darwin
 import Foundation
 
@@ -22,9 +21,9 @@ import Foundation
 
 /// Handle OS Signals
 public class Trap {
-    
+
     public typealias SignalHandler = @convention(c) (Int32) -> (Void)
-    
+
     // OS Signals
     public enum Signal {
         case hangup
@@ -35,7 +34,7 @@ public class Trap {
         case kill
         case alarm
         case termination
-        
+
         /// All posible signals.
         public static let all = [
             hangup,
@@ -47,25 +46,25 @@ public class Trap {
             alarm,
             termination
         ]
-        
+
         /// Return the OS values
         var osValue: Int32 {
             switch self {
             case .hangup:
                 return SIGHUP
-            case interrupt:
+            case .interrupt:
                 return SIGINT
-            case illegal:
+            case .illegal:
                 return SIGILL
-            case trap:
+            case .trap:
                 return SIGTRAP
-            case abort:
+            case .abort:
                 return SIGABRT
-            case kill:
+            case .kill:
                 return SIGKILL
-            case alarm:
+            case .alarm:
                 return SIGALRM
-            case termination:
+            case .termination:
                 return SIGTERM
             }
         }
@@ -83,14 +82,14 @@ public extension Trap {
      */
     public static func handle(signal: Signal, action: SignalHandler) {
         typealias SignalAction = sigaction
-        
+
         // Instead of using just `signal` we can use the more powerful `sigaction`
-        var signalAction = SignalAction(__sigaction_u: unsafeBitCast(action, __sigaction_u.self), sa_mask: 0, sa_flags: 0)
-        withUnsafePointer(&signalAction) { actionPointer in
+        var signalAction = SignalAction(__sigaction_u: unsafeBitCast(action, to: __sigaction_u.self), sa_mask: 0, sa_flags: 0)
+        withUnsafePointer(to: &signalAction) { actionPointer in
             sigaction(signal.osValue, actionPointer, nil)
         }
     }
-    
+
     /**
      Establishes multiple `signals` to be handled by the `action`
      
@@ -99,7 +98,7 @@ public extension Trap {
      */
     public static func handle(signals: [Signal], action: SignalHandler) {
         signals.forEach {
-            handle($0, action: action)
+            handle(signal: $0, action: action)
         }
     }
 }
