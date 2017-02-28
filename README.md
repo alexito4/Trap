@@ -26,4 +26,4 @@ It can also handle multiple signals at the same time.
 
 ## Requirements
 
-Trap is build using the stable version of **Swift 2.2**.
+Trap is build using the stable version of **Swift 3.0**.
